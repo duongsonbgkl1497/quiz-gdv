@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Nghiệp Vụ GDV – MB Bank</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --orange: #D85A30;
+    --purple: #534AB7;
+    --bg: #F7F8FA;
+    --card: #ffffff;
+    --border: #E5E7EB;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0F6E56 0%, #1D9E75 60%, #5DCAA5 100%);
+    color: white;
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+
+  header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; position: relative; }
+  header p { font-size: 0.85rem; opacity: 0.85; position: relative; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+  .stats-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-pill strong { color: var(--text); }
+
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .progress-bar { background: #E5E7EB; border-radius: 99px; height: 7px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), #5DCAA5); border-radius: 99px; transition: width 0.4s ease; }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 6px 16px;
+    font-size: 13px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--green); color: var(--green); }
+  .filter-btn.active { background: var(--green); color: white; border-color: var(--green); }
+  .filter-btn.active-wrong { background: var(--orange); color: white; border-color: var(--orange); }
+  .filter-btn.active-purple { background: var(--purple); color: white; border-color: var(--purple); }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .q-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .badge {
+    background: #EEF2FF;
+    color: #534AB7;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+
+  .badge.multi { background: #FFF4ED; color: #D85A30; }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--text);
+    border-left: 3px solid var(--green);
+    padding-left: 12px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 9px; margin: 1.25rem 0; }
+
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--card);
+    user-select: none;
+  }
+
+  .opt:hover { border-color: var(--green); background: var(--green-light); }
+  .opt.selected { border-color: var(--green); background: var(--green-light); }
+  .opt.correct { border-color: var(--green); background: var(--green-light); }
+  .opt.wrong { border-color: var(--red); background: var(--red-light); }
+
+  .opt-label {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1.5px solid #D1D5DB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+
+  .opt.selected .opt-label,
+  .opt.correct .opt-label { background: var(--green); border-color: var(--green); color: white; }
+  .opt.wrong .opt-label { background: var(--red); border-color: var(--red); color: white; }
+
+  .opt-text { font-size: 14px; line-height: 1.55; color: var(--text); }
+
+  .feedback {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+
+  .feedback.ok { background: var(--green-light); color: #085041; border: 1px solid #9FE1CB; }
+  .feedback.nok { background: var(--red-light); color: #7F1D1D; border: 1px solid #F09595; }
+
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  button.btn {
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+  }
+
+  button.btn-submit { background: var(--green); color: white; }
+  button.btn-submit:hover { background: var(--green-dark); }
+  button.btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  button.btn-next { background: var(--card); color: var(--text); border: 1.5px solid var(--border); }
+  button.btn-next:hover { background: var(--bg); border-color: #9CA3AF; }
+
+  .score-screen {
+    text-align: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .score-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green), #5DCAA5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    box-shadow: 0 8px 32px rgba(29,158,117,0.3);
+  }
+
+  .score-circle .big { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .score-circle .small { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+  .score-msg { font-size: 15px; color: var(--muted); margin-bottom: 2rem; line-height: 1.6; }
+  .score-msg strong { color: var(--text); }
+
+  .score-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  button.btn-green { background: var(--green); color: white; }
+  button.btn-green:hover { background: var(--green-dark); }
+  button.btn-orange { background: var(--orange); color: white; }
+  button.btn-orange:hover { background: #bf4e28; }
+  button.btn-purple { background: var(--purple); color: white; }
+  button.btn-purple:hover { background: #3d3599; }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 1.25rem; }
+    .q-text { font-size: 14px; }
+    .opt-text { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏦 Quiz Nghiệp Vụ GDV</h1>
+  <p>MB Bank – 75 câu hỏi ôn tập</p>
+</header>
+
+<div class="container">
+  <div id="app"></div>
+</div>
+
+<script>
+const RAW=[
+{q:"Khi khách hàng có nhu cầu giao dịch mở thẻ và nộp tiền với số tiền lớn tại quầy. CN sẽ hướng dẫn KH thực hiện như thế nào?",a:[3,4],opts:["Hướng dẫn KH lấy số vào quầy UB làm thẻ xong quay ra lấy thêm số vào quầy GDV nộp tiền","Hướng dẫn KH lấy số vào quầy GDV nộp tiền xong ra lấy số vào quầy UB làm thẻ","Nhân viên điều phối quan sát xem luồng nào hiện tại đang trống hướng dẫn KH ưu tiên lấy số vào luồng đó làm dịch vụ trước","KH lấy số vào luồng UB/ GDV thực hiện theo nhu cầu của KH và chuyển quầy đối với giao dịch còn lại không thuộc luồng."]},
+{q:"Khách hàng đến gửi 2 tỷ tiền tiết kiệm. ĐPV nhận biết phân hạng KH qua những yếu tố nào?",a:[1,2],opts:["Mời KH lấy phiếu qua APP của KH","Mời KH lấy phiếu qua APP My MB của ĐPV ( KH cung cấp số điện thoại hoặc CCCD)","Nhân sự ĐPV hỗ trợ KH lấy phiếu qua mã QR dành cho nhân sự ĐPV","Nhận diện KH qua phong thái tác phong và tự lấy phiếu cho KH"]},
+{q:"Trong trường hợp sàn giao dịch đang rất đông khách, GDV sẽ xử lý số chờ trên hệ thống như thế nào?",a:[2,4],opts:["Bấm gọi số liên tục để giải phóng số trên hệ thống","Gọi số theo thứ tự Khách hàng đang chờ","Nhờ CBQL gọi và hỗ trợ KH xử lý giao dịch cho KH \"tiềm năng\" trước như: Tiết kiệm, bảo hiểm..","GDV báo cáo CBQL, xin phép & được sự đồng ý của KH đang phục vụ trong lúc chờ hoàn thiện giao dịch được xử lý cho KH tiếp theo để giảm tải thời gian chờ"]},
+{q:"Khách hàng phản ánh với Chi nhánh A. KH không ra quầy giao dịch nhưng vẫn nhận được thông báo qua APP về giao dịch nộp tiền tại CN A? Đề nghị CN giải thích",a:[3],opts:["Chi nhánh thông báo với KH là lỗi APP","Chi nhánh phản hồi với KH chắc chắn KH có lấy số nên mới có thông báo như trên","Chi nhánh tiếp nhận thông tin, gửi thông tin đến đầu mối liên quan kiểm tra và xin phép KH sẽ gửi kết quả đến KH trong thời gian sớm nhất"]},
+{q:"Trong tháng, Anh/Chị sơ suất để xảy ra 01 lỗi về định danh khách hàng (KYC) và 01 lỗi về hạch toán sai tài khoản phí. Khi đối soát bảng điểm tính chỉ tiêu lỗi, Anh/Chị xác định số điểm bị trừ của mình sẽ được hệ thống tính toán theo phương pháp nào sau đây?",a:[1],opts:["Tính riêng từng cấu phần","Tính gộp tổng lỗi","Không đáp án nào đúng"]},
+{q:"Tháng 4/ 2026, GDV A phát sinh giảm net 5 tỷ HĐV có kỳ hạn, vậy GDV A bị trừ bao nhiêu Điểm kinh doanh (ĐKD)?",a:[1],opts:["Không bị trừ","Trừ 140 ĐKD","Trừ 42 ĐKD"]},
+{q:"Trong tháng vừa qua, đánh giá kết quả quy đổi các chỉ tiêu của Anh/Chị bị sụt giảm điểm kinh doanh so với tháng trước. Khi theo dõi bảng tổng hợp điểm kinh doanh và hiệu quả làm việc cuối tháng, Anh/Chị xác định việc sụt giảm này có dẫn đến hệ quả bị trừ điểm bút toán giao dịch hay không?",a:[1],opts:["Không","Có","Tùy sản phẩm"]},
+{q:"Anh/Chị là nhân sự mới gia nhập MB và đang trong giai đoạn 02 tháng thử việc tại vị trí Giao dịch viên. Trong thời gian này, theo quy định về đánh giá hiệu quả nhân sự của MB, kết quả Năng suất lao động (NSLĐ) của Anh/Chị trong giai đoạn thử việc này sẽ được hệ thống xử lý như thế nào?",a:[1],opts:["Anh/Chị được xác định thuộc đối tượng được loại trừ Năng suất lao động (NSLĐ) trong suốt thời gian 02 tháng thử việc","Anh/Chị được xác định thuộc đối tượng không được loại trừ Năng suất lao động (NSLĐ), đánh giá hàng tháng theo quy định"]},
+{q:"Trong các buổi họp định kỳ về hiệu quả hoạt động, đơn vị thường nhắc đến việc tối ưu hóa 'Chi phí bình quân của line Vận hành'. Với vai trò là Giao dịch viên trực tiếp tham gia vào dây chuyền tác nghiệp, Anh/Chị xác định những loại chi phí thực tế nào sau đây được tổng hợp để tính toán chỉ tiêu này?",a:[1],opts:["Chi phí nhân sự, Chi phí tài sản, Chi phí marketing, Chi phí truyền thông, Chi phí quản lý công vụ","Chi phí tài sản, Chi phí marketing, Chi phí truyền thông, Chi phí quản lý công vụ","Chi phí nhân sự, Chi phí tài sản, Chi phí truyền thông, Chi phí quản lý công vụ"]},
+{q:"Để triển khai luồng lấy phiếu thứ tự trực tuyến qua App MyMB nhằm giảm thời gian chờ đợi cho khách hàng, Chi nhánh/Phòng giao dịch nơi Anh/Chị đang làm việc cần đáp ứng điều kiện tiên quyết nào về mặt nhân sự và hệ thống theo quy định?",a:[2],opts:["CN/PGD chỉ cần có 1 nhân sự đảm nhận vị trí điều phối viên: bảo vệ, UB, RM, UB tập sự….","CN/PGD cần có 1 nhân sự là Điều phối viên (có trong định biên được phân bổ); sau đó Khối TCNS sẽ cấp địa chỉ email và user đăng nhập hệ thống App MyMB"]},
+{q:"Một khách hàng VIP đến Chi nhánh yêu cầu gửi tiết kiệm 2 tỷ đồng. Tại khu vực sảnh, Anh/Chị phối hợp cùng Nhân viên điều phối (ĐPV) để nhận diện và phân luồng khách hàng nhằm đảm bảo trải nghiệm dịch vụ cao cấp nhất. Trong tình huống này, những thao tác nghiệp vụ nào sau đây cần được thực hiện để nhận diện khách hàng chính xác?",a:[2,3],opts:["Chỉ nhìn phong thái khách hàng để tự lấy phiếu.","Mời KH lấy phiếu qua App MyMB của ĐPV bằng cách cung cấp SĐT hoặc CCCD.","Xin phép được xem phiếu xếp hàng trên thiết bị của KH để phân luồng phù hợp","Đưa khách hàng vào thẳng quầy mà không cần lấy phiếu"]},
+{q:"Anh/Chị đang làm việc tại một Chi nhánh không được cấp định biên nhân sự Điều phối viên (ĐPV) chuyên trách. Khi gặp trường hợp khách hàng không thể tự thực hiện dịch vụ tự động (Self-service) và cần hỗ trợ ngay tại sảnh, theo quy định vận hành, đơn vị của Anh/Chị cần xử lý như thế nào để vừa đảm bảo hỗ trợ khách hàng kịp thời, vừa đúng quy trình?",a:[4],opts:["Tuyển dụng nhân sự ĐPV mới ngay lập tức.","Đăng ký 01 nhân sự kiêm nhiệm đảm nhận vị trí ĐPV để được cấp user đăng nhập hệ thống App MyMB.","Hướng dẫn khách hàng lấy số tại máy xếp hàng tự động.","Nhân sự phụ trách điều phối hỗ trợ khách hàng thông qua QR ĐPV"]},
+{q:"Khách hàng A đang ở nhà và đã lấy số thứ tự từ xa qua App MB. Khách gọi điện lo lắng hỏi: \"Tôi chưa đến ngân hàng thì làm sao biết khi nào sắp đến lượt mình để đi cho kịp?\". GDV nên hướng dẫn khách hàng thao tác như thế nào trên App?",a:[2],opts:["Do hệ thống tự động gửi tin nhắn rác","Hệ thống sẽ hiển thị đầy đủ thông tin vé, chi nhánh và trạng thái giao dịch giúp KH theo dõi từ xa.","Do khách hàng đã từng lấy phiếu tại Chi nhánh trước đó nên hệ thống lưu thông tin.","Do App đang trong quá trình bảo trì"]},
+{q:"Anh/Chị đang trong tháng thử việc thứ 2 và nhận thấy chỉ số NSLĐ cá nhân rất thấp. Theo hướng dẫn KPIs 2026, Anh/Chị cần xác định kết quả NSLĐ của mình được tính toán như thế nào?",a:[1],opts:["Xác nhận kết quả của mình được loại trừ khi tính chỉ số NSLĐ chung của đơn vị","Không, tính như nhân viên chính thức.","Chỉ được loại trừ 50% định mức.","Tùy thuộc vào quyết định của Giám đốc Chi nhánh."]},
+{q:"Một Chi nhánh có phát sinh lỗi vận hành trong kỳ đánh giá 6 tháng đầu năm 2026. Theo nguyên tắc tính điểm, nếu lỗi này chưa được khắc phục tại thời điểm kết thúc kỳ đánh giá, điểm số sẽ được xử lý như thế nào?",a:[2],opts:["Lỗi sẽ được xóa bỏ để bắt đầu kỳ đánh giá mới.","Lỗi được chuyển và ghi nhận tiếp vào kỳ đánh giá tiếp theo.","Chỉ tính 1/2 số điểm trừ vì đã hết kỳ.","Không tính điểm trừ nếu lỗi thuộc về yếu tố khách quan"]},
+{q:"Khi Anh/Chị thực hiện chi tiền mặt tại quầy cho khách hàng, để tuân thủ đúng Quy chế thanh toán và Kho quỹ, Anh/Chị cần thực hiện thao tác nào sau đây trước khi khách hàng rời khỏi quầy chi?",a:[1,2],opts:["Yêu cầu và chứng kiến Khách hàng đếm lại tiền trước khi ra khỏi quầy chi","Có thể giúp Khách hàng bằng việc kiểm đếm lại tiền trên máy và đề nghị Khách hàng chứng kiến việc kiểm đếm lại tiền","Có thể chi bó tiền nguyên niêm phong cho Khách hàng"]},
+{q:"Khi nhận đồng phục mới từ ngân hàng, Anh/Chị nhận thấy quần/áo được thiết kế có túi. Để tuân thủ đúng quy định về trang phục khi làm việc trực tiếp với tiền mặt (theo QCĐH.B4.TT/PL.09), Anh/Chị phải thực hiện xử lý như thế nào trước khi mặc đi làm?",a:[2],opts:["Mặc nguyên đồng phục được phát vì đây là thiết kế chung của ngân hàng.","May bịt miệng túi để đảm bảo đúng quy định về trang phục không có túi đối với người làm việc liên quan đến tiền mặt."]},
+{q:"Trong các tình huống tác nghiệp dưới đây tại đơn vị, trường hợp nào Anh/Chị bắt buộc phải thực hiện đóng bó và niêm phong tiền theo đúng Quy chế thanh toán và Kho quỹ (QCĐH.B4.TT/PL.09)?",a:[1,2,3],opts:["Khi nộp vào NHNN hoặc TCTD khác","Khi vận chuyển trên đường","Khi chuyển tiền từ Hub/CN đến CN/PGD và ngược lại.","Khi chi tiền cho Khách hàng"]},
+{q:"Theo Quy chế thanh toán và Kho quỹ mã hiệu QCĐH.B4.TT/PL.09: Khi KH nộp tiền cho GDV/KN nhưng số tiền nộp chưa phân loại theo mệnh giá. Trường hợp này GDV/KN phải làm như thế nào?",a:[1,2,3,4],opts:["Đề nghị KH phải chứng kiến toàn bộ quá trình GDV/KN phân loại và kiểm đếm.","Thực hiện phân loại tiền theo mệnh giá trước khi kiểm đếm.","Đếm từ mệnh giá lớn đến mệnh giá nhỏ theo thứ tự đếm bó, túi chẵn trước, tiếp theo đếm thếp lẻ, rồi đếm tờ, miếng lẻ sau.","Không để lẫn tiền đã kiểm đếm với tiền chưa kiểm đếm."]},
+{q:"Trong quá trình kiểm đếm tiền mặt tại quầy để chi trả cho khách hàng, Anh/Chị phát hiện có một số tờ tiền bị cũ, rách hoặc không đủ tiêu chuẩn lưu thông. Để tuân thủ đúng Quy chế kho quỹ (QCĐH.B4.TT/PL.10) và đảm bảo chất lượng dịch vụ, Anh/Chị xử lý như thế nào?",a:[1],opts:["Bắt buộc phải chọn lọc, loại bỏ các tờ tiền cũ, rách và thay thế bằng tiền đủ tiêu chuẩn trước khi giao cho khách hàng","Không phải chọn lọc vì tiền nào cũng tiêu được. Nếu tiền rách NH sẽ đổi miễn phí cho KH."]},
+{q:"Trong quá trình thu tiền từ khách hàng, Anh/Chị tiếp nhận một tờ tiền polymer bị mòn và bong tróc nhiều mực in ở các phần hình ảnh chính. Để khẳng định đây vẫn là tiền thật, Anh/Chị cần kiểm tra kỹ những yếu tố bảo an bền vững nào sau đây?",a:[1,2],opts:["Cửa sổ lớn có mệnh giá dập nổi","Cửa sổ nhỏ có yếu tố hình ẩn","Hình ẩn nổi","Mực đổi màu"]},
+{q:"Theo Quy chế thanh toán và Kho quỹ mã hiệu QCĐH.B4.TT/PL.09: Trong tình huống phát hiện số tiền khách hàng nộp thiếu so với giấy nộp tiền, GDV cần xử lý như thế nào?",a:[1,3],opts:["Yêu cầu khách hàng nộp bổ sung cho đủ","Tự điều chỉnh số tiền trên hệ thống theo thực tế nhận","Lập lại giấy nộp tiền theo số tiền thực tế nếu khách không bổ sung đủ.","Tạm ghi nhận đủ tiền theo chứng từ để tránh ảnh hưởng giao dịch"]},
+{q:"Trong giờ giao dịch cao điểm, Anh/Chị gặp áp lực lớn về thời gian xử lý hồ sơ cho khách hàng đang chờ đợi. Trong các kịch bản tác nghiệp sau đây, hành vi nào bị coi là vi phạm nghiêm trọng Quy chế (QCĐH.B4.TT/PL.09) và tiềm ẩn rủi ro vận hành cao?",a:[1,2,3],opts:["Thu chi tiền không lập chứng từ kế toán","Để tiền ngoài sổ sách để xử lý nhanh giao dịch","Hai bên không ký chứng từ sau khi giao nhận tiền","Kiểm đếm tiền có sự chứng kiến của cả hai bên"]},
+{q:"Trong quá trình Anh/Chị phối hợp cùng Ban quản lý để thực hiện các nghiệp vụ xuất/nhập tài sản tại kho tiền (theo QCĐH.B4.TT/PL.09), để đảm bảo tính giám sát chặt chẽ và an toàn tuyệt đối, Anh/Chị và các thành viên phải tuân thủ nghiêm ngặt nguyên tắc vào/ra nào sau đây?",a:[1,2,4],opts:["TQ/KN/GDV chính vào đầu tiên và ra cuối cùng","Tất cả nhân sự vào kho phải ký vào sổ vào, ra kho tiền","Chỉ 3 thành viên mở khóa kho mới phải ký vào sổ vào, ra kho tiền","Các thành viên giữ chìa khóa phải bảo mật mã số và chìa khóa"]},
+{q:"Trong đợt rà soát và thiết lập lại hệ thống an toàn kho quỹ tại đơn vị, Anh/Chị được giao nhiệm vụ thực hiện quy trình bảo quản chìa khóa dự phòng cửa kho tiền. Theo Quy chế (QCĐH.B4.TT/PL.09), Anh/Chị phải phối hợp thực hiện các thao tác nào sau đây để đảm bảo đúng quy định?",a:[1,2,3,4],opts:["Chìa/mã khóa của mỗi ổ khóa được cất, niêm phong trong phong bì riêng","3 thành viên giữ chìa khóa chứng kiến việc đưa các phong bì niêm phong chìa khóa dự phòng vào một hộp tôn và khóa, niêm phong","2 trong 3 thành viên giữ chìa khóa kho tiền áp tải gửi vào kho tiền NHNN/KBNN Chi nhánh, TCTD khác/CNMB khác cùng địa bàn Tỉnh/TP ngay trong ngày","Hộp bảo quản chìa khóa dự phòng cửa kho tiền có 2 ổ khóa (GĐ, TQ giữ chìa)"]},
+{q:"Trong quá trình Anh/Chị thực hiện niêm phong bì kho Tài sản bảo đảm (TSBD) để đưa vào bảo quản theo Quy chế (QCĐH.B4.TT/PL.09), tờ niêm phong bì phải đảm bảo có đầy đủ họ tên và chữ ký của những thành phần trách nhiệm nào sau đây để hồ sơ được coi là hợp lệ?",a:[1,2],opts:["TQ/KN/GDV chính quản lý kho tiền","Người đứng đầu đơn vị/người được ủy quyền (theo quy định của MB từng thời kỳ)","RM quản lý KH"]},
+{q:"Khách hàng mang đến quầy một tờ tiền bị cháy/thủng mất một phần diện tích và yêu cầu đổi tiền mới. Sau khi kiểm tra đối chiếu (theo QCĐH.B4.TT/PL.10), Anh/Chị xác định tờ tiền này đủ điều kiện được ngân hàng đổi trả khi diện tích còn lại phải đạt tối thiểu bao nhiêu % so với tờ tiền cùng loại?",a:[2],opts:["50%","60%","70%","80%"]},
+{q:"Tại Chi nhánh, do yêu cầu thực tế công việc, Giám đốc Chi nhánh dự kiến thực hiện ủy quyền quản lý kho tiền cho chức danh Trưởng phòng/Phó phòng KHCN hoặc KHDN/CIB. Theo đúng Quy chế vận hành (QCĐH.B4.TT/PL.09), để việc ủy quyền này có hiệu lực và đảm bảo tính tuân thủ, hồ sơ ủy quyền bắt buộc phải có thêm điều kiện phê duyệt của cấp nào sau đây?",a:[2],opts:["Có phê duyệt của Giám đốc Khối KHCN/SME/CIB","Có phê duyệt của GĐ/PGĐ Trung tâm Quỹ & DVKH","Không có điều kiện bổ sung"]},
+{q:"Trong quá trình thực hiện nhiệm vụ kiểm kê hoặc giám sát định kỳ tại kho tiền (theo QCĐH.B4.TT/PL.09), ngoài các thành viên trực tiếp giữ chìa khóa và mã số, Anh/Chị xác định chức danh nào sau đây là đối tượng được phép vào kho tiền để thực hiện nhiệm vụ quản lý và giám sát trực tiếp tại đơn vị?",a:[1,3,4],opts:["Giám đốc Chi nhánh","Nhân viên bất kỳ của ngân hàng khi cần hỗ trợ","Thành viên Hội đồng kiểm kê kho quỹ","Cán bộ được Giám đốc CN giao nhiệm vụ cụ thể"]},
+{q:"Bạn là GDV được Giám đốc cử thay thế TQ trong thời gian nghỉ phép, bạn nhận bàn giao từ TQ chìa khóa lớp cánh trong của cửa kho tiền. Bạn phải bảo quản chìa khóa này ở đâu để đảm bảo đúng quy định QCĐH.B4.TT/PL.09?",a:[1],opts:["Tự bảo quản trong két sắt riêng của TQ (được bàn giao chìa khóa cho GDV) đặt tại khu vực làm việc của bộ phận quỹ.","Tất cả các chìa được niêm phong gửi tại két của GĐ DV","Tất cả các chìa được niêm phong gửi tại két của TQ","Tất cả các chìa được niêm phong gửi tại két của PPDV/KSV"]},
+{q:"Cuối ngày làm việc tại một PGD không có kho tiền, Anh/Chị (với vai trò GĐ DV/PP DV/KSV/GDV chính) phải thực hiện quy trình bàn giao và bảo quản bộ chìa khóa két của mình như thế nào để đảm bảo đúng Quy chế (QCĐH.B4.TT/PL.09)?",a:[1,2],opts:["GĐ DV/PP DV/KSV, KN/GDV chính bỏ toàn bộ bộ chìa khóa két vào phong bì và gửi két của Giám đốc.","GĐ DV/PP DV/KSV, KN/GDV chính bỏ toàn bộ bộ chìa khóa két vào phong bì được bảo quản tại két của GĐ DV (chỉ áp dụng khi GĐ DV không quản lý mã két).","Các thành viên tự bảo quản chìa khóa két trong ngăn bàn làm việc có khóa tại trụ sở cơ quan."]},
+{q:"Trong công tác quản lý và bảo mật thiết bị tại đơn vị, đối với toàn bộ chìa khóa dự phòng của xe chuyên dùng, tủ sắt và két sắt (theo QCĐH.B4.TT/PL.09), Anh/Chị phải thực hiện phương án bảo quản nào sau đây để đúng quy định vận hành?",a:[1],opts:["Được niêm phong gửi tại két của Giám đốc Chi nhánh","Được niêm phong gửi tại két của GĐ DV","Được niêm phong gửi tại két của PPDV/KSV","Được niêm phong gửi tại két của TQ"]},
+{q:"Đơn vị của Anh/Chị đang lên danh sách nhân sự để thành lập Tổ lưu động thực hiện thu chi tiền mặt ngoài trụ sở cho một khách hàng doanh nghiệp lớn. Dựa trên quy chuẩn vận hành (QCĐH.B4.TT/PL.09), khi rà soát danh sách thành viên để đảm bảo tối ưu hóa nguồn lực mà vẫn đúng quy định, Anh/Chị xác định vị trí nào sau đây KHÔNG thuộc thành phần bắt buộc tối thiểu phải có mặt trong Tổ lưu động?",a:[3],opts:["Nhân viên an ninh","Nhân viên áp tải/Chủ hàng","Chuyên viên hỗ trợ","Lái xe"]},
+{q:"Đơn vị đang chuẩn bị cho kỳ kiểm kê tài sản đột xuất nhưng Giám đốc Chi nhánh hiện đang vắng mặt. Để đảm bảo Hội đồng kiểm kê tiền mặt, tài sản quý (TSQ), giấy tờ có giá (GTCG)... được thành lập đúng quy định (QCĐH.B4.TT/PL.09), Anh/Chị xác định những chức danh nào sau đây được phép đảm nhiệm vai trò Chủ tịch Hội đồng kiểm kê thay thế?",a:[3],opts:["Trưởng phòng/Phó phòng","Trưởng quỹ","Giám đốc dịch vụ CN/Phó giám đốc dịch vụ CN (Trưởng Hub)/Phó giám đốc CN/Giám đốc PGD/Phó giám đốc PGD trong trường hợp được Giám đốc Chi nhánh chỉ định trong Quyết định thành lập hội đồng kiểm kê."]},
+{q:"Trong quá trình kiểm đếm tiền mặt do khách hàng nộp tại quầy, Anh/Chị phát hiện có một số tờ tiền VNĐ có dấu hiệu là tiền giả. Để xử lý đúng quy trình vận hành và quy định của pháp luật (QCĐH.B4.TT/PL.11) mà vẫn đảm bảo tính minh bạch với khách hàng, Anh/Chị phải thực hiện ngay thao tác quan trọng nào sau đây?",a:[1,3],opts:["Lập biên bản về việc thu giữ tiền giả.","Lập tức trả lại cho khách hàng","Bấm lỗ, thu giữ tiền giả."]},
+{q:"Trong quá trình tác nghiệp và xử lý giao dịch tiền mặt tại MB, Anh/Chị cần nhận diện và tuyệt đối tránh thực hiện những hành vi nào sau đây để đảm bảo tuân thủ đúng Quy chế (QCĐH.B4.TT) và quy định pháp luật của Ngân hàng Nhà nước?",a:[1,2,3,4],opts:["Làm tiền giả; vận chuyển, tàng trữ, lưu hành, mua, bán tiền giả.","Hủy hoại đồng tiền trái pháp luật.","Từ chối nhận, lưu hành đồng tiền đủ tiêu chuẩn lưu thông do Ngân hàng Nhà nước Việt Nam phát hành.","Sao, chụp tiền Việt Nam với bất kỳ mục đích nào không có sự chấp nhận trước bằng văn bản của Ngân hàng Nhà nước Việt Nam."]},
+{q:"Khi thực hiện thu tiền mặt từ khách hàng tại quầy, để đảm bảo tính chính xác và đúng Quy chế (QCĐH.B4.TT/PL.09), Anh/Chị cần thực hiện thao tác kiểm đếm theo những nguyên tắc bắt buộc nào sau đây?",a:[1,3,4],opts:["Kiểm đếm trước sự chứng kiến của KH","Có thể đếm tiền theo thứ tự bất kỳ để tiết kiệm thời gian","Đếm từ mệnh giá lớn đến nhỏ, từ bó chẵn đến lẻ","Tổ chức khu vực làm việc gọn gàng, tuyệt đối không để lẫn lộn giữa tiền đã kiểm đếm và tiền chưa kiểm đếm"]},
+{q:"KH A mở TKTT tại MB. Tuy nhiên KH A đang ở nước ngoài và muốn ủy quyền cho KH B trong nước, trong trường hợp này KH A có thể thực hiện ủy quyền không? Nếu được thì thủ tục như thế nào?",a:[3],opts:["KH A đang ở nước ngoài không thực hiện ủy quyền được cho KH B.","KH A yêu cầu tổ chức hành nghề công chứng nơi họ cư trú công chứng hợp đồng ủy quyền (Đại sứ quán/ Lãnh sự quán) và gửi mail cho MB.","KH A yêu cầu tổ chức hành nghề công chứng nơi họ cư trú công chứng hợp đồng ủy quyền (Đại sứ quán/ Lãnh sự quán...); KH B yêu cầu tổ chức hành nghề công chứng nơi họ cư trú công chứng tiếp vào bản gốc hợp đồng ủy quyền này, hoàn tất thủ tục công chứng hợp đồng ủy quyền.","Tất cả đều sai."]},
+{q:"KHDN là tổ chức bắt buộc bố trí KTT/người phụ trách KT theo quy định pháp luật. Tuy nhiên, DN chưa bố trí được. Hồ sơ mở TK của KH, người đại diện hợp pháp của CTK có được đăng ký đồng thời cả 2 chữ ký CTK và chữ ký KTT không?",a:[1],opts:["Không. Người đại diện hợp pháp của CTK không được ký cả 2 chữ ký CTK và chữ ký KTT trên chứng từ giao dịch liên quan đến TKTT","Có"]},
+{q:"Việc sử dụng TKTT bằng đồng Việt Nam của người không cư trú (tổ chức, cá nhân), người cư trú là cá nhân nước ngoài và TKTT bằng ngoại tệ trên lãnh thổ Việt Nam được quy định thế nào?",a:[3,4],opts:["Không giới hạn giao dịch","KH chỉ cần cam kết sử dụng VND, ngoại tệ đúng mục đích","Tuân thủ quy định pháp luật về quản lý ngoại hối","Tuân thủ quy định ngoại hối của MB từng thời kỳ, hiện là Quy chế hoạt động nguồn vốn và kinh doanh tiền tệ"]},
+{q:"Khi có nhu cầu hoàn/tiếp quỹ trong ngày, Trưởng quỹ A và GDV B chủ động thực hiện giao/nhận tiền dưới sự giám sát của camera, không có sự chứng kiến của PP DV/ KSV do CBQL bận phê duyệt chứng từ giao dịch. Đây là hành vi:",a:[2],opts:["Không vi phạm quy định, việc giao nhận/tiền giữa Trưởng quỹ và GDV đã có camera giám sát","Vi phạm quy định, việc giao nhận/tiền giữa Trưởng quỹ và GDV cần được thực hiện dưới sự chứng kiến của PPDV/KSV và camera quan sát"]},
+{q:"Một Khách hàng tổ chức (KHTC) liên hệ với Anh/Chị để hỏi về việc mở Tài khoản vốn đầu tư trực tiếp nước ngoài vào Việt Nam. Dựa trên Quy trình tài khoản hiện hành (09/QĐ-HS), Anh/Chị cần hướng dẫn khách hàng thực hiện mở tài khoản qua kênh nào sau đây để đảm bảo đúng quy định?",a:[1],opts:["Hướng dẫn khách hàng đến thực hiện mở tài khoản trực tiếp tại các Chi nhánh/Phòng giao dịch của MB","Qua RM KHTC","Online qua Biz MBBank","Tất cả đều đúng"]},
+{q:"Anh/Chị đang tiếp nhận hồ sơ mở tài khoản cho một Khách hàng Tổ chức (KHTC). Khi thực hiện quy trình nhận biết khách hàng theo Quy trình tài khoản (09/QĐ-HS), trong trường hợp nào sau đây Anh/Chị xác định khách hàng KHÔNG phải kê khai mẫu biểu MB25 (Thông tin nhận biết Giám đốc/TGĐ, người thành lập)?",a:[3],opts:["Với các tổ chức không có chức danh GĐ/TGĐ (VD: chức danh Hiệu trưởng, trưởng ban, Thủ trưởng, Chủ tịch, Đại tá....)","Với tổ chức người Đại diện PL đồng thời có chức danh là GĐ/TGĐ","Đối với KHTC, KH phải thực hiện kê khai thông tin nhận biết GĐ/TGĐ, Người thành lập"]},
+{q:"Trường hợp chấm dứt tư cách Người giám hộ/ Người đại diện theo pháp luật do chủ tài khoản đủ 15 tuổi thủ tục và hồ sơ gồm những gì?",a:[1,2,3],opts:["Chủ tài khoản và/hoặc (Các) chủ TKTT chung phải trực tiếp đến MB thực hiện thủ tục chấm dứt tư cách Người giám hộ/Người đại diện theo pháp luật","GTTT còn giá trị sử dụng của chủ tài khoản chứng minh đã đủ điều kiện mở và sử dụng tài khoản không qua người giám hộ/Người đại diện theo pháp luật","Đề nghị thay đổi thông tin theo mẫu biểu MB từng thời kỳ"]},
+{q:"Khách hàng A (14 tuổi) đến MB muốn tự mình đứng tên mở tài khoản thanh toán. Anh chị sẽ xử lý tình huống này như thế nào?",a:[3],opts:["Đồng ý mở tài khoản nếu khách hàng xuất trình được Thẻ căn cước","Yêu cầu khách hàng cung cấp xác nhận của bố mẹ rồi thực hiện mở tài khoản","Từ chối thực hiện, hướng dẫn KH mở TK thông qua người đại diện theo pháp luật","Hướng dẫn khách hàng thực hiện định danh điện tử (eKYC) trên App MB"]},
+{q:"Một khách hàng cá nhân muốn ủy quyền cho người khác mở tài khoản thanh toán thay mình tại MB. Theo quy định, yêu cầu này có được thực hiện không?",a:[1],opts:["Không được thực hiện, vì đối với KHCN không được ủy quyền mở tài khoản thanh toán","Được thực hiện nếu người được ủy quyền là người có quan hệ nhân thân với KH","Được thực hiện nếu văn bản ủy quyền có công chứng hợp lệ","Được thực hiện nếu khách hàng thực hiện ủy quyền trực tiếp tại quầy MB"]},
+{q:"Khi tiếp nhận bộ hồ sơ mở Tài khoản thanh toán từ một Khách hàng tổ chức (KHTC) mới, để đảm bảo thông tin khách hàng cung cấp là chính xác và độc lập theo đúng quy định của MB, Anh/Chị phải thực hiện thao tác kiểm tra nào sau đây?",a:[3],opts:["Gọi điện trực tiếp người đại diện pháp luật của công ty để xác nhận","Chỉ cần đối chiếu thông tin khách hàng cung cấp với bản gốc giấy phép kinh doanh","Truy cập các trang như dangkykinhdoanh.gov.vn hoặc tracuunnt.gdt.gov.vn hoặc masothue.com để kiểm tra"]},
+{q:"Ông Bình có một tài khoản thanh toán tại MB và muốn ủy quyền cho con trai là anh Hải sử dụng tài khoản này. Tuy nhiên, anh Hải lại muốn ủy quyền lại cho vợ mình để tiện đi rút tiền. Theo quy định về ủy quyền KHCN, nhận định nào sau đây là đúng?",a:[1],opts:["Anh Hải không được phép ủy quyền lại cho người khác sử dụng tài khoản của ông Bình","Anh Hải hoàn toàn có quyền ủy quyền lại cho vợ nếu văn bản ủy quyền ban đầu của ông Bình cho phép","Việc ủy quyền lại là hợp lệ nếu có sự chứng kiến của cán bộ quản lý tại Chi nhánh MB","Việc ủy quyền lại là hợp lệ nếu được thực hiện tại văn phòng công chứng"]},
+{q:"Anh/Chị tiếp nhận yêu cầu thực hiện giao dịch từ một tài khoản thanh toán chung, trong đó các đồng chủ tài khoản có quốc tịch và tình trạng cư trú khác nhau. Để đảm bảo tính tuân thủ, Anh/Chị căn cứ vào quy định nào để xác định phạm vi giao dịch được phép của tài khoản này?",a:[2],opts:["Theo thỏa thuận của các chủ tài khoản chung tại văn bản đăng ký với MB","Phạm vi được phép của tất cả các chủ tài khoản thanh toán chung theo quy định pháp luật về quản lý ngoại hối","Sử dụng không hạn chế","Ưu tiên theo phạm vi của chủ tài khoản là người cư trú là công dân VN"]},
+{q:"KHCN A đang có 20 TKTT tại MB và muốn mở thêm 01 TKTT nữa để quản lý kinh doanh. Anh chị xử lý tình huống này thế nào?",a:[2],opts:["Mở thêm bình thường vì khách hàng có nhu cầu thật","Từ chối mở thêm vì KHCN chỉ được mở tối đa 20 tài khoản theo quy định","Yêu cầu khách hàng nộp thêm phí để mở tài khoản thứ 21"]},
+{q:"KHCN A là người nước ngoài, có thời hạn cư trú tại Việt Nam 3 tháng muốn mở Hợp đồng tiền gửi có kỳ hạn tại MB. Anh chị sẽ xử lý như thế nào?",a:[2],opts:["Chấp nhận nếu khách hàng thực hiện gửi và nhận chi trả qua tài khoản thanh toán tại MB","Từ chối vì cá nhân nước ngoài phải cư trú tại Việt Nam từ 6 tháng trở lên mới được gửi tiền có kỳ hạn","Chấp nhận mở hợp đồng với kỳ hạn tối đa là 1 tháng","Mở bình thường vì KH có GTTT hợp lệ"]},
+{q:"Hợp đồng tiền gửi có kỳ hạn của một khách hàng tổ chức bị mất. Khách hàng đến báo mất và yêu cầu được rút tiền ngay. Anh chị xử lý như thế nào?",a:[4],opts:["Yêu cầu khách hàng đợi 07 ngày làm việc mới được cấp bản sao để rút tiền","Cấp lại bản chính Hợp đồng tiền gửi mới sau đó thực hiện tất toán cho khách hàng","Thực hiện chi trả ngay nếu khách hàng có đầy đủ hồ sơ pháp lý công ty","Tiếp nhận báo mất và cung cấp bản sao Hợp đồng có đóng dấu 'Sao y bản chính' sau 01 ngày làm việc"]},
+{q:"Khách hàng A là công dân VN người cư trú muốn gửi tiền gửi chung có kỳ hạn với khách hàng B là người nước ngoài không cư trú. Anh chị giải quyết như thế nào?",a:[2],opts:["Chấp nhận gửi bình thường","Từ chối vì người cư trú và người không cư trú không được gửi tiền gửi chung có kỳ hạn","Chỉ chấp nhận nếu gửi bằng VND","Chỉ chấp nhận nếu gửi tiết kiệm"]},
+{q:"KHCN A đang gửi HĐTG và muốn thay đổi thời hạn gửi tiền từ 3 tháng thành 6 tháng so với thỏa thuận ban đầu. Theo quy trình, Anh/chị xử lý thế nào?",a:[3],opts:["Thực hiện lập phụ lục thay đổi theo yêu cầu của khách hàng","Tư vấn khách hàng chỉ được thay đổi khi đến hạn","Từ chối thực hiện, thông báo với KH đây là nội dung không được phép thay đổi so với thỏa thuận ban đầu"]},
+{q:"Một khách hàng lớn tuổi không dùng điện thoại thông minh, muốn mở \"Tiền gửi số\" tại quầy để hưởng lãi suất ưu đãi. Anh/ chị xử lý như thế nào?",a:[2],opts:["Trực tiếp mở tại quầy trên hệ thống cho khách hàng","Tư vấn KH thực hiện trên App, không thực hiện mở tại quầy","Mở tại quầy sau khi có phê duyệt của Ban lãnh đạo đơn vị"]},
+{q:"CBQL yêu cầu Anh/chị chấm đối chiếu các khoản tiền gửi có chỉ thị quay vòng. Anh/chị sẽ thực hiện với tần suất như thế nào theo quy định?",a:[1],opts:["Hàng ngày","Hàng tuần","Định kỳ vào ngày cuối tháng","Khi có yêu cầu của Hội sở"]},
+{q:"Khách hàng A được chuyển giao quyền sở hữu Thẻ tiết kiệm từ khách hàng B. Khi in Thẻ tiết kiệm mới cho khách hàng A, CBGD phải làm gì với Thẻ tiết kiệm cũ của khách hàng B?",a:[1],opts:["Thu hồi, đóng dấu \"đã chuyển giao\", cắt góc và chuyển trạng thái thu hồi trên hệ thống, lưu cùng chứng từ hàng ngày","Trả lại cho khách hàng B","Hủy bỏ bằng máy hủy tài liệu"]},
+{q:"Khách hàng đến quầy yêu cầu tất toán tiền gửi số mở trên App. Anh chị xử lý như thế nào?",a:[1,2,3],opts:["Thực hiện tất toán khi hệ thống App MB lỗi tại thời điểm KH yêu cầu","Thực hiện tất toán nếu tiền gửi số mở tại quầy trước ngày 13.06.24","Thực hiện tất toán trường hợp KH chọn tính năng tắt tất toán online trên App","Thực hiện tất toán trong mọi trường hợp nếu có phê duyệt của BLĐ CN/PGD"]},
+{q:"Một khách hàng vị thành niên đến quầy yêu cầu tự thực hiện giao dịch rút tiền gửi tiết kiệm. Để đảm bảo tính hợp pháp của giao dịch theo quy định của MB, Anh/Chị cần kiểm tra và xác nhận khách hàng này đã thỏa mãn những điều kiện bắt buộc nào sau đây?",a:[1,2],opts:["Đã đủ 15 tuổi trở lên tính theo ngày tháng năm sinh","Đã thực hiện thủ tục chấm dứt tư cách người giám hộ/đại diện theo pháp luật tại MB","Phải có xác nhận từ người đại diện theo pháp luật"]},
+{q:"Một khách hàng lớn tuổi đến quầy nhờ Anh/Chị tất toán sổ tiết kiệm số trên App vì không thạo công nghệ. Trong tình huống này, để đảm bảo an toàn bảo mật và tuân thủ tuyệt đối quy định về đạo đức nghề nghiệp, hành vi nào sau đây Anh/Chị TUYỆT ĐỐI KHÔNG được phép thực hiện?",a:[2,3],opts:["Hướng dẫn khách hàng tự thao tác trên App MBBank","Sử dụng phương tiện điện tử của CBNV để tất toán tiền gửi số của KH","Trực tiếp thao tác trên phương tiện điện tử (điện thoại) của khách hàng","Tư vấn khách hàng nâng cấp phiên bản dịch vụ ngân hàng điện tử mới nhất để thao tác trên App"]},
+{q:"Khách hàng đến quầy yêu cầu Anh/Chị thực hiện tất toán một khoản tiền gửi số. Theo quy định của MB, Anh/Chị hướng dẫn và thực hiện chi trả số tiền này cho khách hàng theo hình thức nào sau đây là đúng?",a:[3],opts:["Chi trả bằng tiền mặt trực tiếp cho khách hàng","Chuyển vào tài khoản của người thụ hưởng do khách hàng chỉ định","Chi trả vào tài khoản thanh toán (TKTT) của chính khách hàng đó tại MB","Chi trả tiền mặt hoặc chuyển khoản theo yêu cầu KH"]},
+{q:"Khách hàng đến quầy yêu cầu Anh/Chị thực hiện tất toán một khoản tiền gửi số. Theo quy định của MB, Anh/Chị hướng dẫn KH xác thực giao dịch theo luồng nào?",a:[4],opts:["Qua App MBBank","SMS OTP","Không cần xác thực","Qua App MBBank/ SMS OTP"]},
+{q:"RM mang một HĐTG đã có đủ chữ ký, đóng dấu của KHTC về bàn giao cho GDV. GDV cần thực hiện hành động gì đầu tiên?",a:[1],opts:["Vào Sổ theo dõi giao nhận HĐTG","Hạch toán mở HĐTG ngay vào hệ thống","Gọi điện cho khách hàng xác nhận lại"]},
+{q:"Doanh nghiệp B có HĐTG kỳ hạn 3 tháng, muốn thay đổi kỳ hạn gửi tiền từ 3 tháng lên 12 tháng khi HĐTG đang ở tháng thứ 2. Anh chị tư vấn thời điểm thực hiện thay đổi thông tin là khi nào?",a:[1],opts:["Tại thời điểm HĐTG đến hạn/quay vòng","Bất cứ thời điểm nào khách hàng có nhu cầu","Sau khi HĐTG đã thực hiện được quá 1/2 thời gian","Không được thay đổi kỳ hạn tại mọi thời điểm"]},
+{q:"Trên mẫu HĐTG KHTC in sẵn, khách hàng muốn dùng bút mực điền thêm thông tin về số tiền gửi. Điều này có hợp lệ không?",a:[2],opts:["Có, HĐTG được phép ghi tay toàn bộ thông tin","Không, chỉ một số nội dung (số HĐ, ngày trên HĐ, ngày gửi, ngày đến hạn, kỳ hạn, lãi suất, chữ ký) mới được ghi tay","Có, miễn là có đóng dấu giáp lai của khách hàng","Chỉ được ghi tay nếu có phê duyệt của BLĐ chi nhánh"]},
+{q:"Khi thực hiện tất toán Hợp đồng tiền gửi (HĐTG) cho một Khách hàng tổ chức (KHTC), Anh/Chị căn cứ vào đâu để xác định chính xác tài khoản nhận chi trả tiền gửi nhằm đảm bảo đúng Quy trình tiền gửi KHTC?",a:[1],opts:["Thực hiện chi trả tiền gửi thông qua TKTT của KH được chỉ định tại HĐTG, văn bản sửa đổi, bổ sung HĐTG (nếu KH chỉ định nhận chi trả tiền gửi tại văn bản sửa đổi, bổ sung HĐTG).","Thực hiện theo Đề nghị tất toán HĐTG (nếu TK nhận chi trả khác với trên HĐTG)"]},
+{q:"Tại sao GDV không được thực hiện ghi tay chứng từ cho khách hàng khi thực hiện giao dịch thu chi tiền mặt tại quầy?",a:[2],opts:["Vì hệ thống đã hỗ trợ in toàn bộ thông tin từ phần mềm","Để đảm bảo tính khách quan và khách hàng hoàn toàn chịu trách nhiệm về thông tin cung cấp","Chữ viết tay hệ thống không OCR được khi chấm chứng từ tự động cuối ngày"]},
+{q:"KH A (chưa có thông tin tại MB) có nhu cầu nộp tiền 50 triệu chuyển đi NH khác. Anh chị sẽ xử lý như thế nào?",a:[2],opts:["1. Kiểm tra GTTT của KH  2. Hướng dẫn KH lập Giấy nộp tiền, Bảng kê nộp tiền","1. Kiểm tra GTTT của KH, photo lưu cùng chứng từ giao dịch  2. Hướng dẫn KH lập Giấy nộp tiền, Bảng kê nộp tiền","1. Kiểm tra GTTT của KH  2. Hướng dẫn KH lập UNC","1. Kiểm tra GTTT của KH, photo lưu cùng chứng từ giao dịch  2. Hướng dẫn KH lập UNC"]},
+{q:"Đối với giao dịch nộp/rút tiền tại quầy KH xác thực qua App, trạng thái giao dịch cuối ngày nào sau đây là đúng?",a:[1],opts:["Hoàn thành","Hủy","Đã duyệt"]},
+{q:"Một khách hàng đến quầy yêu cầu thực hiện giao dịch nộp/rút tiền mặt. Theo quy định, Anh/Chị sẽ từ chối thực hiện giao dịch ngay lập tức nếu phát hiện GTTT có những dấu hiệu bất thường nào sau đây?",a:[1,2,3],opts:["GTTT giả mạo","Thông tin bị mờ không đọc được","GTTT có dấu hiệu tẩy xóa, cắt ghép"]},
+{q:"KH A có nhu cầu bán 2.000 USD, GDV cần hướng dẫn khách hàng lập mẫu biểu nào khi thu đổi ngoại tệ mặt với KH tại quầy?",a:[2,3],opts:["Giấy thu đổi ngoại tệ","Hợp đồng giao dịch ngoại tệ giao ngay","Bảng kê các loại tiền nộp","Giấy nộp tiền"]},
+{q:"Khách hàng A có sổ tiết kiệm tại MB. KH muốn ủy quyền cho người con là KH B (16 tuổi) rút/tất toán sổ tiết kiệm. Anh chị sẽ xử lý như thế nào?",a:[2],opts:["Thực hiện giao dịch ủy quyền vì KH B thuộc đối tượng được phép gửi tiền tiết kiệm theo quy định","Từ chối thực hiện vì KH B không thuộc đối tượng nhận ủy quyền theo quy định (là công dân Việt Nam từ đủ 18 tuổi trở lên và có năng lực hành vi dân sự đầy đủ)"]},
+{q:"Ông Smith là một chuyên gia người nước ngoài, hiện đang làm việc tại Việt Nam và có Giấy tờ xác minh thời hạn lưu trú còn hiệu lực 12 tháng. Ông Smith đến chi nhánh MB để thực hiện giao dịch gửi tiền. Nội dung nào sau đây là đúng quy định?",a:[2],opts:["Ông Smith có thể gửi tiết kiệm với mọi kỳ hạn mà không phụ thuộc vào thời hạn của GTXMTT","Ông Smith chỉ được gửi tiền gửi có kỳ hạn nếu thời gian cư trú tại Việt Nam từ 6 tháng trở lên và kỳ hạn gửi không được dài hơn thời hạn hiệu lực còn lại của GTXMTT. Đồng thời, nguồn tiền gửi của KH phải hợp pháp, hợp lệ theo quy định quản lý ngoại hối của MB","Ông Smith không được phép thực hiện bất kỳ hình thức gửi tiền tiết kiệm hay tiền gửi có kỳ hạn nào tại MB vì là cá nhân người nước ngoài","Ông Smith được gửi tiền có kỳ hạn mà không cần chứng minh tính hợp pháp của nguồn tiền gửi theo quy định quản lý ngoại hối"]},
+{q:"GDV thực hiện thu tiền mặt từ khách hàng. Do khu vực quầy có nhiều hồ sơ chứng từ, GDV đã mang tiền vào khu vực máy đếm tiền phía trong (nơi khách hàng không quan sát được và nằm ngoài góc quay của camera quầy) để kiểm đếm. Hành động này của GDV đã vi phạm nguyên tắc nào trong quy trình giao dịch tiền mặt?",a:[2],opts:["Vi phạm nguyên tắc kiểm đếm tại khu vực có camera quan sát","Vi phạm nguyên tắc kiểm đếm trước sự chứng kiến của khách hàng và camera; rủi ro phát sinh khiếu nại của khách hàng nếu có sự sai lệch trong quá trình kiểm đếm mà không có bằng chứng đối soát minh bạch","Vi phạm quy định về ứng xử, giao tiếp với KH; rủi ro làm giảm uy tín hình ảnh chuyên nghiệp của MB trong mắt khách hàng"]},
+{q:"Khi khách hàng đến quầy yêu cầu thực hiện giao dịch tiền mặt, Anh/Chị phải thực hiện các thao tác định danh nào sau đây để đảm bảo đúng quy trình giao dịch và kiểm soát rủi ro định danh tại MB?",a:[1,2,3],opts:["Kiểm tra GTTT bản gốc còn hiệu lực của KH","Kiểm tra thông tin trên GTTT khớp đúng với thông tin đã đăng ký tại MB","Kiểm tra hình ảnh trên GTTT khớp đúng với KH giao dịch tại quầy và hình ảnh lưu trữ trên hệ thống","Trường hợp KH không cung cấp được GTTT, xem xét xử lý linh động nếu là KH thân thiết, Vip"]}
+];
+
+const LABELS=['A','B','C','D'];
+let questions=JSON.parse(JSON.stringify(RAW));
+let filtered=[], cur=0, score=0, answered=false, selected=[], wrongIdx=[], mode='all';
+
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr;}
+function isMulti(q){return q.a.length>1;}
+
+function initFiltered(){
+  if(mode==='all') filtered=questions.map((_,i)=>i);
+  else filtered=wrongIdx.slice();
+  cur=0; score=0; answered=false; selected=[];
+  render();
+}
+
+function render(){
+  const app=document.getElementById('app');
+  if(cur>=filtered.length){renderScore(app);return;}
+  const qi=filtered[cur];
+  const q=questions[qi];
+  const multi=isMulti(q);
+  const pct=Math.round((cur/filtered.length)*100);
+
+  let optsHtml=q.opts.map((o,i)=>{
+    const idx=i+1;
+    let cls='opt';
+    if(answered){
+      if(q.a.includes(idx)) cls+=' correct';
+      else if(selected.includes(idx)) cls+=' wrong';
+    } else {
+      if(selected.includes(idx)) cls+=' selected';
+    }
+    return `<div class="${cls}" onclick="toggleOpt(${idx})">
+      <div class="opt-label">${LABELS[i]}</div>
+      <div class="opt-text">${o}</div>
+    </div>`;
+  }).join('');
+
+  let feedbackHtml='';
+  if(answered){
+    const correctLabels=q.a.map(i=>LABELS[i-1]).join(', ');
+    const isCorrect=q.a.length===selected.length && q.a.every(x=>selected.includes(x));
+    feedbackHtml=isCorrect
+      ?`<div class="feedback ok">✅ <strong>Đúng!</strong> Đáp án: <strong>${correctLabels}</strong></div>`
+      :`<div class="feedback nok">❌ <strong>Chưa đúng.</strong> Đáp án đúng: <strong>${correctLabels}</strong></div>`;
+  }
+
+  app.innerHTML=`
+    <div class="stats-bar">
+      <div class="stat-pill">Câu <strong>${cur+1}/${filtered.length}</strong></div>
+      <div class="stat-pill">Đúng <strong style="color:var(--green)">${score}</strong></div>
+      ${wrongIdx.length>0?`<div class="stat-pill">Sai <strong style="color:var(--red)">${wrongIdx.length}</strong></div>`:''}
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Tiến độ</span><span>${pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn${mode==='all'?' active':''}" onclick="setMode('all')">Tất cả (${RAW.length})</button>
+      <button class="filter-btn${mode==='wrong'?' active-wrong':''}" onclick="setMode('wrong')" ${wrongIdx.length===0?'disabled':''}>Ôn câu sai (${wrongIdx.length})</button>
+      <button class="filter-btn active-purple" onclick="doShuffle()">🔀 Xáo trộn</button>
+    </div>
+    <div class="card">
+      <div class="q-meta">
+        <span>Câu ${qi+1}</span>
+        ${multi?'<span class="badge multi">Nhiều đáp án đúng</span>':'<span class="badge">1 đáp án đúng</span>'}
+      </div>
+      <div class="q-text">${q.q}</div>
+    </div>
+    <div class="options">${optsHtml}</div>
+    ${feedbackHtml}
+    <div class="btn-row">
+      ${!answered?`<button class="btn btn-submit" id="sub" onclick="submit()" ${selected.length===0?'disabled':''}>Kiểm tra đáp án</button>`:''}
+      ${answered?`<button class="btn btn-next" onclick="next()">${cur+1<filtered.length?'Câu tiếp theo →':'Xem kết quả 🏆'}</button>`:''}
+    </div>
+  `;
+}
+
+function setMode(m){
+  if(m==='wrong'&&wrongIdx.length===0)return;
+  mode=m; initFiltered();
+}
+
+function doShuffle(){
+  shuffle(questions);
+  wrongIdx=[]; mode='all'; initFiltered();
+}
+
+function toggleOpt(idx){
+  if(answered)return;
+  const qi=filtered[cur];
+  const q=questions[qi];
+  if(isMulti(q)){
+    const i=selected.indexOf(idx);
+    if(i>=0) selected.splice(i,1); else selected.push(idx);
+  } else { selected=[idx]; }
+  render();
+}
+
+function submit(){
+  if(!selected.length)return;
+  answered=true;
+  const qi=filtered[cur];
+  const q=questions[qi];
+  const ok=q.a.length===selected.length && q.a.every(x=>selected.includes(x));
+  if(ok) score++;
+  else if(!wrongIdx.includes(qi)) wrongIdx.push(qi);
+  render();
+}
+
+function next(){cur++;answered=false;selected=[];render();}
+
+function renderScore(app){
+  const pct=Math.round((score/filtered.length)*100);
+  let msg='', emoji='';
+  if(pct>=90){msg='Xuất sắc! Bạn nắm vững nghiệp vụ rất tốt. Tiếp tục duy trì nhé!';emoji='🎉';}
+  else if(pct>=70){msg='Khá tốt! Hãy ôn lại những câu đã sai để củng cố kiến thức.';emoji='👏';}
+  else if(pct>=50){msg='Cần cố gắng thêm. Hãy xem lại phần lý thuyết và thử lại.';emoji='💪';}
+  else{msg='Hãy ôn tập kỹ hơn. Dùng chức năng ôn câu sai để cải thiện nhé!';emoji='📚';}
+  app.innerHTML=`
+    <div class="score-screen">
+      <div class="score-circle">
+        <div class="big">${score}/${filtered.length}</div>
+        <div class="small">${pct}% đúng</div>
+      </div>
+      <p style="font-size:1.5rem;margin-bottom:8px">${emoji}</p>
+      <p class="score-msg">${msg}</p>
+      <div class="score-btns">
+        <button class="btn btn-green" onclick="restart()">Làm lại từ đầu</button>
+        ${wrongIdx.length>0?`<button class="btn btn-orange" onclick="setMode('wrong')">Ôn câu sai (${wrongIdx.length})</button>`:''}
+        <button class="btn btn-purple" onclick="doShuffle()">🔀 Xáo trộn & làm lại</button>
+      </div>
+    </div>
+  `;
+}
+
+function restart(){questions=JSON.parse(JSON.stringify(RAW));wrongIdx=[];mode='all';initFiltered();}
+
+initFiltered();
+</script>
+</body>
+</html>
